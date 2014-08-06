@@ -1,0 +1,26 @@
+[
+    {
+        "name": "test something",
+        "path": "/url",
+        "response": [
+            200,
+            401
+        ],
+        "object": {
+            "name": "michael",
+            "age": 23
+        }
+    },
+    {
+        "name": "test something else",
+        "path": "/url",
+        "response": [
+            200,
+            401
+        ],
+        "object": {
+            "name": "michael",
+            "age": 23
+        }
+    }
+]
