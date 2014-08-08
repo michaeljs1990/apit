@@ -31,11 +31,9 @@ func ReadJSON(file string) ([]testCase, bool) {
 
 	if err != nil {
 		log.Fatal(err)
-	} else {
-		dir = dir + "/"
 	}
 
-	if input, err := ioutil.ReadFile(dir + file); err == nil {
+	if input, err := ioutil.ReadFile(dir + "/" + file); err == nil {
 		// Check if file contains valid json
 		decoder := json.NewDecoder(bytes.NewReader(input))
 		// Decode and check for error
@@ -56,9 +54,9 @@ func RunTests(tests []testCase) {
 
 	color.Blue("Starting test casses...")
 
-	for test := range tests {
-		color.Green("run")
-		fmt.Println(tests[test])
+	// Cycle through all test cases
+	for _, test := range tests {
+		fmt.Println(test)
 	}
 
 }
