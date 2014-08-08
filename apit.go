@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"terame.com/michaeljs1990/apit/src"
 )
 
@@ -19,8 +18,8 @@ func main() {
 
 	// Check if file contains valid json and can be open
 	if data, valid := apit.ReadJSON(file); valid {
-		fmt.Println(data)
-	} else {
-		fmt.Println(file)
+		// Run tests against API
+		apit.RunTests(data)
 	}
+
 }
