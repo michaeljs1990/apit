@@ -1,19 +1,18 @@
 [
     {
         "name": "test something",
-        "path": "/url",
+        "method": "GET",
+        "path": "http://localhost/test.html",
         "response": [
             200,
             401
         ],
-        "sent": {
-            "name": "michael",
-            "age": 23
-        },
-        "return": null
+        "sent": null,
+        "return": {"test": "json"}
     },
     {
         "name": "test something else",
+        "method": "PUT",
         "path": "/url",
         "response": [
             200,
