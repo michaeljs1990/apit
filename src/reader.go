@@ -51,12 +51,14 @@ func ReadJSON(file string) ([]testCase, bool) {
 	return nil, false
 }
 
-// Run all tests
+// Run all tests and keep track of results.
 func Execute(tests []testCase) {
 
 	color.Blue("Starting test cases...")
 
 	client := &http.Client{}
+
+	var passed int = 0
 
 	for _, test := range tests {
 		color.Blue("Test: " + test.Name)
@@ -70,38 +72,47 @@ func Execute(tests []testCase) {
 				contentbody = bytes.NewReader(data)
 			}
 
-			makeRequest(test, contentbody, client)
+			if success := makeRequest(test, contentbody, client); success {
+				passed++
+			}
 
 		} else {
 			color.Red(err.Error())
 		}
+	}
 
+	color.Blue("Passed: %v/%v", passed, len(tests))
+
+	if passed == len(tests) {
+		color.Green("SUCCESS")
+	} else {
+		color.Red("FAILED")
 	}
 
 }
 
 // Run for every test case we loop through
-func makeRequest(test testCase, body io.Reader, client *http.Client) {
+func makeRequest(test testCase, body io.Reader, client *http.Client) bool {
 
 	req, err := http.NewRequest(test.Method, test.Path, body)
 
 	if err != nil {
 		color.Red("NewRequest: %s", err.Error())
-		return
+		return false
 	}
 
 	resp, err := client.Do(req)
 
 	if err != nil {
 		color.Red("Do: %s", err.Error())
-		return
+		return false
 	}
 
 	returned, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
 		color.Red("ReadAll: %s", err.Error())
-		return
+		return false
 	}
 
 	// Unmarshal and compare JSON
@@ -109,7 +120,7 @@ func makeRequest(test testCase, body io.Reader, client *http.Client) {
 
 	if err != nil {
 		color.Red("MarshalJSON: %s", err.Error())
-		return
+		return false
 	}
 
 	json_input := make(map[string]interface{})
@@ -119,7 +130,7 @@ func makeRequest(test testCase, body io.Reader, client *http.Client) {
 
 	if err != nil {
 		color.Red("Unmarshal File: %s", err.Error())
-		return
+		return false
 	}
 
 	err = json.Unmarshal(returned, &web_output)
@@ -130,11 +141,15 @@ func makeRequest(test testCase, body io.Reader, client *http.Client) {
 		switch truthy {
 		case true:
 			color.Green("Result: %v", truthy)
+			return true
 		case false:
 			color.Red("Result: %v", truthy)
+			return false
 		}
 	} else {
-		color.Red("Unmarshal Web: %s", err.Error())
+		color.Red("Unmarshal Web: %s, Check for proper method and path.", err.Error())
+		return false
 	}
 
+	return false
 }
