@@ -19,7 +19,7 @@ func main() {
 	// Check if file contains valid json and can be open
 	if data, valid := apit.ReadJSON(file); valid {
 		// Run tests against API
-		apit.RunTests(data)
+		apit.Execute(data)
 	}
 
 }

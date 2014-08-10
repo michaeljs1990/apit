@@ -53,7 +53,7 @@ func ReadJSON(file string) ([]testCase, bool) {
 }
 
 // Run all tests
-func RunTests(tests []testCase) {
+func Execute(tests []testCase) {
 
 	color.Blue("Starting test cases...")
 
@@ -71,40 +71,64 @@ func RunTests(tests []testCase) {
 				contentbody = bytes.NewReader(data)
 			}
 
-			if req, err := http.NewRequest(test.Method, test.Path, contentbody); err == nil {
-				if resp, err := client.Do(req); err == nil {
-					if returned, err := ioutil.ReadAll(resp.Body); err == nil {
-						// Unmarshal and compare JSON
-						if data, err := test.Return.MarshalJSON(); err == nil {
+			makeRequest(test, contentbody, client)
 
-							json_input := make(map[string]interface{})
-							web_output := make(map[string]interface{})
-
-							if err := json.Unmarshal(data, &json_input); err == nil {
-								if err2 := json.Unmarshal(returned, &web_output); err2 == nil {
-									fmt.Println(reflect.DeepEqual(json_input, web_output))
-								} else {
-									color.Red(err2.Error())
-								}
-							} else {
-								color.Red(err.Error())
-							}
-						} else {
-							color.Red(err.Error())
-						}
-					} else {
-						color.Red(err.Error())
-					}
-				} else {
-					color.Red(err.Error())
-				}
-			} else {
-				color.Red(err.Error())
-			}
 		} else {
 			color.Red(err.Error())
 		}
 
+	}
+
+}
+
+// Run for every test case we loop through
+func makeRequest(test testCase, body io.Reader, client *http.Client) {
+
+	req, err := http.NewRequest(test.Method, test.Path, body)
+
+	if err != nil {
+		color.Red(err.Error())
+		return
+	}
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		color.Red(err.Error())
+		return
+	}
+
+	returned, err := ioutil.ReadAll(resp.Body)
+
+	if err != nil {
+		color.Red(err.Error())
+		return
+	}
+
+	// Unmarshal and compare JSON
+	data, err := test.Return.MarshalJSON()
+
+	if err != nil {
+		color.Red(err.Error())
+		return
+	}
+
+	json_input := make(map[string]interface{})
+	web_output := make(map[string]interface{})
+
+	err = json.Unmarshal(data, &json_input)
+
+	if err != nil {
+		color.Red(err.Error())
+		return
+	}
+
+	err = json.Unmarshal(returned, &web_output)
+
+	if err == nil {
+		fmt.Println(reflect.DeepEqual(json_input, web_output))
+	} else {
+		color.Red(err.Error())
 	}
 
 }
