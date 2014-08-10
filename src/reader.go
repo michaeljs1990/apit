@@ -81,10 +81,10 @@ func RunTests(tests []testCase) {
 							web_output := make(map[string]interface{})
 
 							if err := json.Unmarshal(data, &json_input); err == nil {
-								if err2 := json.Unmarshal(returned, &web_output) err2 == nil {
+								if err2 := json.Unmarshal(returned, &web_output); err2 == nil {
 									fmt.Println(reflect.DeepEqual(json_input, web_output))
 								} else {
-									color.Red(err.Error())
+									color.Red(err2.Error())
 								}
 							} else {
 								color.Red(err.Error())
