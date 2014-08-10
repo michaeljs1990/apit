@@ -77,12 +77,12 @@ func RunTests(tests []testCase) {
 						// Unmarshal and compare JSON
 						if data, err := test.Return.MarshalJSON(); err == nil {
 
-							mashaled_input := make(map[string]interface{})
-							fdsa := make(map[string]interface{})
+							json_input := make(map[string]interface{})
+							web_output := make(map[string]interface{})
 
-							if err := json.Unmarshal(data, &mashaled_input); err == nil {
-								if err2 := json.Unmarshal(returned, &fdsa) err2 == nil {
-									fmt.Println(reflect.DeepEqual(mashaled_input, fdsa))
+							if err := json.Unmarshal(data, &json_input); err == nil {
+								if err2 := json.Unmarshal(returned, &web_output) err2 == nil {
+									fmt.Println(reflect.DeepEqual(json_input, web_output))
 								} else {
 									color.Red(err.Error())
 								}
