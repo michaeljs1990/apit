@@ -3,7 +3,6 @@ package apit
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"io/ioutil"
 	"log"
@@ -87,21 +86,21 @@ func makeRequest(test testCase, body io.Reader, client *http.Client) {
 	req, err := http.NewRequest(test.Method, test.Path, body)
 
 	if err != nil {
-		color.Red(err.Error())
+		color.Red("NewRequest: %s", err.Error())
 		return
 	}
 
 	resp, err := client.Do(req)
 
 	if err != nil {
-		color.Red(err.Error())
+		color.Red("Do: %s", err.Error())
 		return
 	}
 
 	returned, err := ioutil.ReadAll(resp.Body)
 
 	if err != nil {
-		color.Red(err.Error())
+		color.Red("ReadAll: %s", err.Error())
 		return
 	}
 
@@ -109,7 +108,7 @@ func makeRequest(test testCase, body io.Reader, client *http.Client) {
 	data, err := test.Return.MarshalJSON()
 
 	if err != nil {
-		color.Red(err.Error())
+		color.Red("MarshalJSON: %s", err.Error())
 		return
 	}
 
@@ -119,16 +118,23 @@ func makeRequest(test testCase, body io.Reader, client *http.Client) {
 	err = json.Unmarshal(data, &json_input)
 
 	if err != nil {
-		color.Red(err.Error())
+		color.Red("Unmarshal File: %s", err.Error())
 		return
 	}
 
 	err = json.Unmarshal(returned, &web_output)
 
 	if err == nil {
-		fmt.Println(reflect.DeepEqual(json_input, web_output))
+		truthy := reflect.DeepEqual(json_input, web_output)
+
+		switch truthy {
+		case true:
+			color.Green("Result: %v", truthy)
+		case false:
+			color.Red("Result: %v", truthy)
+		}
 	} else {
-		color.Red(err.Error())
+		color.Red("Unmarshal Web: %s", err.Error())
 	}
 
 }
