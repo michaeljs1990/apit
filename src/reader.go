@@ -80,15 +80,15 @@ func RunTests(tests []testCase) {
 							mashaled_input := make(map[string]interface{})
 							fdsa := make(map[string]interface{})
 
-							err := json.Unmarshal(data, &mashaled_input)
-							err2 := json.Unmarshal(returned, &fdsa)
-
-							if err == nil && err2 == nil {
-								fmt.Println(reflect.DeepEqual(mashaled_input, fdsa))
+							if err := json.Unmarshal(data, &mashaled_input); err == nil {
+								if err2 := json.Unmarshal(returned, &fdsa) err2 == nil {
+									fmt.Println(reflect.DeepEqual(mashaled_input, fdsa))
+								} else {
+									color.Red(err.Error())
+								}
 							} else {
-								color.Red(err.Error(), err2.Error())
+								color.Red(err.Error())
 							}
-
 						} else {
 							color.Red(err.Error())
 						}
